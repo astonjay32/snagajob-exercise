@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>Job Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        .column-left{ float: left; width: 33%; }
+        .column-right{ float: right; width: 33%; }
+        .column-center{ display: inline-block; width: 33%; }
+
+    </style>
+    <script src="/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+
+
+
+        $(document).ready(function () {
+
+            $.ajax({
+               type: "GET",
+                url: "/applications",
+                dataType: "json",
+                success: function(data, status, jqXHR){
+                    $.each(data, function(key, val){
+                        $(".accepted-applications").append('<li><a href="/applications/' + val.id + '">' + val.name + '</a></li>');
+                    });
+                }
+            });
+
+
+            $('form').submit(function () {
+                var payload = {}
+                payload.name = $("#applicant-name").val();
+                payload.questions = [];
+                $.each($(".app-question"), function (key, val) {
+                    var q = {};
+                    q.id = $(val).attr("id");
+                    q.answer = $(val).val();
+                    payload.questions[payload.questions.length] = q;
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/applications",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data, status, jqXHR) {
+
+                        if(status == 'success'){
+
+                            $(".accepted-applications").append('<li><a href="/applications/' + data.id + '">' + data.name + '</a></li>');
+                        }
+                    }
+                });
+
+                return false;
+            });
+
+
+        });
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="column-center">
+
+        <h1>Acceptable Answers</h1>
+        <div th:text="${questionsJson}" />
+
+
+
+    </div>
+
+
+    <div class="column-left" >
+        <h1>Job Application</h1>
+
+        <form action="" method="post">
+
+            <div>
+                <label for="applicant-name">Applicant Name</label><input type="text" name="applicant-name"
+                                                                         id="applicant-name" value="Aston Lawrence"/>
+            </div>
+
+            <div th:each="question : ${questions}">
+                <label th:text="${'(' + question.id + ') ' + question.question}"/>
+                <select class="app-question" th:id="${question.id}">
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                </select>
+            </div>
+
+            <input type="submit" value="Submit"/>
+        </form>
+    </div>
+
+
+    <div class="column-right">
+        <h1>Accepted Applications</h1>
+        <ul class="accepted-applications">
+
+        </ul>
+
+    </div>
+
+</div>
+</body>
+</html>
