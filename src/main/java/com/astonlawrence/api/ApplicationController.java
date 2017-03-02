@@ -57,6 +57,12 @@ public class ApplicationController {
         return questionService.getApplicationQuestions();
     }
 
+    @RequestMapping(value="/applications/deleteall", method = RequestMethod.GET)
+    public ResponseEntity deleteAllApplications(){
+        jobApplicationRepo.deleteAll();
+        return ResponseEntity.ok("Applications deleted");
+    }
+
     private ResponseEntity createdApplicationResponse(JobApplication jobApplication){
         JobApplication savedApplication = jobApplicationRepo.save(jobApplication);
         LOGGER.info(String.format(SAVED_LOG_MESSAGE, jobApplication.getName()));

@@ -153,6 +153,16 @@
                 return false;
             });
 
+            $("#delete-all-apps").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/applications/deleteall",
+                    success: function (data) {
+                        $(".accepted-applications li").fadeOut("slow");
+                    }
+                });
+            });
+
 
         });
     </script>
@@ -194,6 +204,7 @@
         <h2>Accepted Applications</h2>
         <p>Posted applications that answer all <a href="/applications/questions">required questions</a> correctly will
             be accepted and appear below, driven by JSON from <a href="/applications">this REST API</a>.</p>
+        <p>To delete all existing applications, <a id="delete-all-apps" href="javascript:void(null);">click here</a>.</p>
         <ul class="accepted-applications">
         </ul>
     </div>
