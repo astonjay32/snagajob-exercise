@@ -11,11 +11,11 @@ mvn spring-boot:run
 ```
 
 ## API endpoints (JSON)
-GET `/applications` - Lists all accepted applications.
-GET `/application/1` - List a single application.
-GET `/applications/questions` - Lists all the questions and required answers.
-POST `/applications` - Add a new application.  Response code *201* means application was accepted, *204* means rejected.
-GET `/applications/deleteall` - Deletes all applications.
+- GET `/applications` - Lists all accepted applications.
+- GET `/application/1` - List a single application.
+- GET `/applications/questions` - Lists all the questions and required answers.
+- POST `/applications` - Add a new application.  Response code *201* means application was accepted, *204* means rejected.
+- GET `/applications/deleteall` - Deletes all applications.
 
 ## Acceptable Answers
 Defined by [JSON file](src/main/resources/application-questions.json) which describes the questions in the application and its accetable answer.
