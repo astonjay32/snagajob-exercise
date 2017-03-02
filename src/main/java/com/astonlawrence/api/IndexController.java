@@ -2,7 +2,7 @@ package com.astonlawrence.api;
 
 import com.astonlawrence.service.JobApplicationQualifier;
 import com.astonlawrence.domain.Question;
-import com.astonlawrence.service.QuestionLoader;
+import com.astonlawrence.service.QuestionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.annotation.ModelAndViewResolver;
 
 import java.util.List;
 
@@ -20,15 +18,14 @@ import java.util.List;
 public class IndexController {
 
     @Autowired
-    private QuestionLoader questionLoader;
-
+    private QuestionService questionService;
 
     @Autowired
     private JobApplicationQualifier jobApplicationQualifier;
 
     @RequestMapping("/")
     String index(Model model) throws JsonProcessingException {
-        List<Question> questions = jobApplicationQualifier.getRequiredQuestions();
+        List<Question> questions = questionService.getApplicationQuestions();
         String name = "Aston Lawrence";
         model.addAttribute("questions", questions);
 
@@ -38,14 +35,6 @@ public class IndexController {
 
         ModelAndView mav = new ModelAndView("application");
 
-
         return "index";
     }
-
-    @RequestMapping(value="/apply", method = RequestMethod.GET)
-    public String apply(Model model){
-        model.addAttribute("questions", jobApplicationQualifier.getRequiredQuestions());
-        return "application";
-    }
-
 }

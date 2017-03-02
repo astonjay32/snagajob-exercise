@@ -22,7 +22,7 @@ public class JobApplication {
     private String questionsJson;
 
     @Transient
-    private List<Question> questions;
+    private List<Answer> questions;
 
     @Transient
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -54,7 +54,7 @@ public class JobApplication {
         this.questionsJson = questionsJson;
     }
 
-    public List<Question> getQuestions(){
+    public List<Answer> getQuestions(){
         if(null == questions){
            setQuestionsFromJson();
         }
@@ -63,14 +63,14 @@ public class JobApplication {
 
     private void setQuestionsFromJson(){
         try{
-            questions = Arrays.asList(objectMapper.readValue(questionsJson, Question[].class));
+            questions = Arrays.asList(objectMapper.readValue(questionsJson, Answer[].class));
         } catch (IOException e) {
             LOGGER.warn("Unable to create list of Questions from JSON: " + questionsJson);
         }
     }
 
 
-    public void setQuestions(List<Question> questions) {
+    public void setQuestions(List<Answer> questions) {
         this.questions = questions;
         if(null != questions){
             try{

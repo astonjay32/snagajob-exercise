@@ -1,9 +1,10 @@
 package com.astonlawrence.api;
 
 import com.astonlawrence.datastore.JobApplicationRepo;
+import com.astonlawrence.domain.Answer;
 import com.astonlawrence.domain.JobApplication;
-import com.astonlawrence.service.JobApplicationQualifier;
 import com.astonlawrence.domain.Question;
+import com.astonlawrence.service.QuestionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -23,16 +24,16 @@ import static org.hamcrest.Matchers.nullValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JobApplicationControllerTest {
+public class ApplicationControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private JobApplicationQualifier jobApplicationQualifier;
+    private JobApplicationRepo jobApplicationRepo;
 
     @Autowired
-    private JobApplicationRepo jobApplicationRepo;
+    private QuestionService questionService;
 
     @Test
     public void testPostApplication_withQualifiedApp_shouldReturn201_andHaveResourceUrl() throws JsonProcessingException {
@@ -53,7 +54,7 @@ public class JobApplicationControllerTest {
         assertThat(savedApplication.getId(), notNullValue());
 
         // Verify resource is available
-        ResponseEntity<JobApplication> retrieveResponse = testRestTemplate.getForEntity("/applications/" + savedApplication.getId(), JobApplication.class);
+        ResponseEntity<JobApplication> retrieveResponse = testRestTemplate.getForEntity("/application/" + savedApplication.getId(), JobApplication.class);
         assertThat(retrieveResponse.getStatusCode(), is(HttpStatus.OK));
         JobApplication retrievedApplication = retrieveResponse.getBody();
         assertThat(retrievedApplication, notNullValue());
@@ -119,9 +120,9 @@ public class JobApplicationControllerTest {
     private JobApplication passingApp() {
         JobApplication jobApplication = new JobApplication();
         jobApplication.setName("Test Application");
-        ArrayList<Question> appQuestions = new ArrayList();
-        for(Question question : jobApplicationQualifier.getRequiredQuestions()){
-            appQuestions.add(new Question(question.getId(), question.getAnswer()));
+        ArrayList<Answer> appQuestions = new ArrayList();
+        for(Question question : questionService.getApplicationQuestions()){
+            appQuestions.add(new Answer(question.getId(), question.getAnswer()));
         }
         jobApplication.setQuestions(appQuestions);
         return jobApplication;

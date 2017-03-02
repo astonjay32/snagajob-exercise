@@ -6,3 +6,4 @@ mvnw.cmd
 target/**
 src/main/*.iml
 .idea/**
+application.log

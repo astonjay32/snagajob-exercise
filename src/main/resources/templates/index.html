@@ -4,32 +4,124 @@
 
     <title>Job Application</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans"/>
     <style type="text/css">
-        .column-left{ float: left; width: 33%; }
-        .column-right{ float: right; width: 33%; }
-        .column-center{ display: inline-block; width: 33%; }
 
+        body {
+
+            /* Courtsy of Google Fonts (link above) */
+            font-family: 'Open Sans', serif;
+
+            /* Courtesy of https://uigradients.com */
+            background: #2BC0E4; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to left, #2BC0E4, #EAECC6); /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to left, #2BC0E4, #EAECC6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        }
+
+        .question-wrap {
+            margin: 4px 0;
+        }
+
+        .question-wrap input, .question-wrap select, .question-wrap option {
+            font-weight: 300;
+        }
+
+        #wrap {
+            width: 1205px;
+            margin: 0 auto;
+        }
+
+        .header{
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 10px 10px;
+            margin: 10px 0;
+            border: 1px solid gray;
+        }
+
+        #left_col {
+            float: left;
+            width: 560px;
+            padding: 10px 10px;
+            min-height: 340px;
+            border: 1px solid gray;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        #right_col {
+            float: right;
+            width: 560px;
+            padding: 10px 10px;
+            border: 1px solid gray;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        label {
+            display: inline-block;
+            width: 240px;
+            text-align: right;
+            margin-right: 12px;
+        }
+
+        .application-submitted-msg{
+            display: none;
+        }
+
+    </style>
+    <style id="dynamic-styles">
+
+        /* Courtesy of http://css3buttongenerator.com/ */
+        .btn {
+            background: #3498db;
+            background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+            background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+            background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+            background-image: -o-linear-gradient(top, #3498db, #2980b9);
+            background-image: linear-gradient(to bottom, #3498db, #2980b9);
+            -webkit-border-radius: 28;
+            -moz-border-radius: 28;
+            border-radius: 28px;
+            font-family: Arial;
+            color: #ffffff;
+            font-size: 20px;
+            padding: 10px 20px 10px 20px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #3cb0fd;
+            background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+            text-decoration: none;
+        }
+
+        #button-wrap-inner {
+            padding: 30px 30px;
+
+            text-align: center;
+        }
     </style>
     <script src="/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
 
-
-
         $(document).ready(function () {
 
+            // Load accepted applications from API
             $.ajax({
-               type: "GET",
+                type: "GET",
                 url: "/applications",
                 dataType: "json",
-                success: function(data, status, jqXHR){
-                    $.each(data, function(key, val){
-                        $(".accepted-applications").append('<li><a href="/applications/' + val.id + '">' + val.name + '</a></li>');
+                success: function (data, status, jqXHR) {
+                    $.each(data, function (key, val) {
+                        $(".accepted-applications").append('<li><a href="/application/' + val.id + '">' + val.name + '</a></li>');
                     });
                 }
             });
 
-
-            $('form').submit(function () {
+            // Attempt to POST a application
+            $('.btn').click(function () {
                 var payload = {}
                 payload.name = $("#applicant-name").val();
                 payload.questions = [];
@@ -46,11 +138,15 @@
                     data: JSON.stringify(payload),
                     contentType: "application/json; charset=utf-8",
                     success: function (data, status, jqXHR) {
-
-                        if(status == 'success'){
-
-                            $(".accepted-applications").append('<li><a href="/applications/' + data.id + '">' + data.name + '</a></li>');
+                        var appStatus = "(rejected)";
+                        if (status == 'success') {
+                            $(".accepted-applications").append('<li><a href="/application/' + data.id + '">' + data.name + '</a></li>');
+                            appStatus = "(accepted)"
                         }
+                        $("#app-status").html(appStatus);
+                        $(".application-submitted-msg").fadeIn("slow", function(){
+                            $(".application-submitted-msg").fadeOut("slow");
+                        });
                     }
                 });
 
@@ -62,50 +158,47 @@
     </script>
 </head>
 <body>
+<div class="header">
+    <h1>Snagajob Code Excercise: Aston Lawrence</h1>
+    <p>Fill out the sample application and click <strong>Submit</strong>.</p>
+</div>
 
-<div class="container">
-
-    <div class="column-center">
-
-        <h1>Acceptable Answers</h1>
-        <div th:text="${questionsJson}" />
-
+<div id="wrap">
 
 
-    </div>
+    <div id="left_col">
+        <h2>Sample Job Application</h2>
 
+        <form id="application" method="post">
 
-    <div class="column-left" >
-        <h1>Job Application</h1>
-
-        <form action="" method="post">
-
-            <div>
-                <label for="applicant-name">Applicant Name</label><input type="text" name="applicant-name"
-                                                                         id="applicant-name" value="Aston Lawrence"/>
+            <div class="question-wrap">
+                <label for="applicant-name">Applicant Name</label><input type="text" name="applicant-name" id="applicant-name" />
             </div>
 
-            <div th:each="question : ${questions}">
+            <div class="question-wrap" th:each="question : ${questions}">
                 <label th:text="${'(' + question.id + ') ' + question.question}"/>
                 <select class="app-question" th:id="${question.id}">
                     <option value="no">No</option>
-                    <option value="yes">Yes</option>
+                    <option value="yes" selected="selected">Yes</option>
                 </select>
             </div>
 
-            <input type="submit" value="Submit"/>
+            <div id="button-wrap-inner">
+                <a class="btn" href="">Submit</a>
+                <p class="application-submitted-msg">Application submitted <span id="app-status"></span></p>
+            </div>
         </form>
     </div>
 
-
-    <div class="column-right">
-        <h1>Accepted Applications</h1>
+    <div id="right_col">
+        <h2>Accepted Applications</h2>
+        <p>Posted applications that answer all <a href="/applications/questions">required questions</a> correctly will
+            be accepted and appear below, driven by JSON from <a href="/applications">this REST API</a>.</p>
         <ul class="accepted-applications">
-
         </ul>
-
     </div>
 
 </div>
+
 </body>
 </html>

@@ -1,9 +1,7 @@
 package com.astonlawrence.datastore;
 
+import com.astonlawrence.domain.Answer;
 import com.astonlawrence.domain.JobApplication;
-import com.astonlawrence.domain.Question;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +28,10 @@ public class JobApplicationRepoTest {
         // Create application to save
         JobApplication jobApplication = new JobApplication();
         jobApplication.setName("Repo test");
-        List<Question> questionList = new ArrayList();
-        questionList.add(new Question("1", "Answer to question 1"));
-        questionList.add(new Question("2", "Answer to question 2"));
-        questionList.add(new Question("3", "Answer to question 3"));
+        List<Answer> questionList = new ArrayList();
+        questionList.add(new Answer("1", "Answer to question 1"));
+        questionList.add(new Answer("2", "Answer to question 2"));
+        questionList.add(new Answer("3", "Answer to question 3"));
         jobApplication.setQuestions(questionList);
 
         JobApplication savedApplication = subject.save(jobApplication);

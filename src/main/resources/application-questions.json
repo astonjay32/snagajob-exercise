@@ -1,0 +1,5 @@
+[
+  { "id": "1", "question": "Do you like to work?", "answer": "yes"},
+  { "id": "2", "question": "Are you allowed to?", "answer": "yes"},
+  { "id": "3", "question": "Are you a fugitive?", "answer": "no"}
+]

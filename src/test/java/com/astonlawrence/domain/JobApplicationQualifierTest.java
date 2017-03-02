@@ -1,6 +1,7 @@
 package com.astonlawrence.domain;
 
 import com.astonlawrence.service.JobApplicationQualifier;
+import com.astonlawrence.service.QuestionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -26,41 +27,43 @@ public class JobApplicationQualifierTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    private QuestionService questionService;
+
     @Test
     public void testAutoWire(){
         assertThat(subject, notNullValue());
-        assertThat(subject.getRequiredQuestions(), is(not(empty())));
     }
 
     @Test
     public void testIsQualified_withQualifiedApp_passes() throws IOException {
-        List<Question> appQuestions = passingApp().getQuestions();
-        assertThat(subject.isQualified(appQuestions), is(true));
+        List<Answer> appQuestions = passingApp().getQuestions();
+        assertThat(subject.isQualified(questionService.getApplicationQuestions(), appQuestions), is(true));
     }
 
     @Test
     public void testIsQualified_withMissingQuestion_fails(){
-        List<Question> emptyQuestionList = new ArrayList<>();
-        assertThat(subject.isQualified(emptyQuestionList), is(false));
+        List<Answer> emptyQuestionList = new ArrayList<>();
+        assertThat(subject.isQualified(questionService.getApplicationQuestions(), emptyQuestionList), is(false));
     }
 
     @Test
     public void testIsQualified_withIncorrectQuestion_fails() throws IOException {
         JobApplication application = passingApp();
-        List<Question> appQuestions = application.getQuestions();
-        appQuestions.get(0).setAnswer("WRONG ANSWER!!!");
-        application.setQuestions(appQuestions);
-        assertThat(subject.isQualified(application.getQuestions()), is(false));
+        List<Answer> appAnswers = application.getQuestions();
+        appAnswers.get(0).setAnswer("WRONG ANSWER!!!");
+        application.setQuestions(appAnswers);
+        assertThat(subject.isQualified(questionService.getApplicationQuestions(), application.getQuestions()), is(false));
     }
 
     private JobApplication passingApp() throws JsonProcessingException {
         JobApplication jobApplication = new JobApplication();
         jobApplication.setName("Test Application");
-        ArrayList<Question> appQuestions = new ArrayList();
-        for(Question question : subject.getRequiredQuestions()){
-            appQuestions.add(new Question(question.getId(), question.getAnswer()));
+        ArrayList<Answer> appAnswers = new ArrayList();
+        for(Question question : questionService.getApplicationQuestions()){
+            appAnswers.add(new Answer(question.getId(), question.getAnswer()));
         }
-        jobApplication.setQuestions(appQuestions);
+        jobApplication.setQuestions(appAnswers);
         return jobApplication;
     }
 
